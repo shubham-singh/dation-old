@@ -31,7 +31,6 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.product_ID}: {self.name}"
 
-
 class Order(models.Model):
     BUY = 'B'
     SELL = 'S'

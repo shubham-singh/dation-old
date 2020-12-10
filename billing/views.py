@@ -16,10 +16,10 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse('index'))
         else:
-          return render(request, "hello/login.html", {
+          return render(request, "billing/index.html", {
                 "message": "Invalid credentials"
             })
-    return render(request, "hello/login.html")
+    return render(request, "billing/index.html")
 
 def index(request):
     if not request.user.is_authenticated:
@@ -38,7 +38,7 @@ def index(request):
     # orderproduct.empty_form.fields['product'].queryset = Product.objects.filter(user=request.user)
 
 
-    return render(request, 'hello/home.html', {
+    return render(request, 'billing/home.html', {
         "customer_form": customer_form,
         'product_form': product_form,
         'order_form': order_form,
@@ -111,7 +111,7 @@ def add_product(request):
 
 def logout_view(request):
     logout(request)
-    # return render(request, "hello/login.html", {
+    # return render(request, "billing/login.html", {
     #             "message": "Logged out successfully"
     #         })
     return HttpResponseRedirect(reverse('index'))

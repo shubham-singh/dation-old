@@ -1,0 +1,70 @@
+{% extends 'billing/layout.html' %}
+{% load static %}
+
+{% block head %}
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+  crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+  window.addEventListener('DOMContentLoaded', (event) => {
+    //   console.log('DOM fully loaded and parsed');
+    // // document.getElementById('add_more').onclick = function () {addproduct()};
+
+
+    // $('#add_more').click(function () {
+    //   var form_idx = $('#id_orderitem_set-TOTAL_FORMS').val();
+    //   $('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+    //   $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+    //   console.log(form_idx);
+    // });
+
+    $(function () {
+      $('#myForm').orderproduct_form({
+        prefix: '{{ orderproduct_form.prefix }}'
+      });
+    })
+
+
+
+
+
+
+</script>
+
+{% endblock %}
+
+
+{% block body %}
+<a href="{% url 'logout' %}">Logout</a>
+
+{% if messages %}
+<ul class="messages alert alert-success" role="alert">
+  {% for message in messages %}
+  <li class="{{ message.tags }}">{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+
+
+<form action="{% url 'order' %}" method="POST">
+    {% csrf_token %}
+    {{ order_form }}
+    <br>
+    {{ orderproduct_form }}
+    <br><br><br>
+    {{ orderproduct_form.management_form }}
+    <button type="submit" class="btn btn-primary btn-sm mt-3">Place Order</button>
+  </form>
+
+
+{% endblock%}
+
+<script type="text/javascript">
+  // $('#add_more').click(function () {
+  //   var form_idx = $('#id_orderitem_set-TOTAL_FORMS').val();
+  //   $('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+  //   $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+  //   console.log(form_idx);
+  // });
+</script>

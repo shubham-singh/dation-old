@@ -1,0 +1,58 @@
+<form action="{% url 'addCustomer' %}" method="POST">
+    {% csrf_token %}
+    {{ customer_form.non_field_errors }}
+    <div class="form-row align-items-center">
+  
+      {% for field in customer_form %}
+      <div class="form-group col-3">
+        {{ field.errors }}
+        {{ field.label_tag }}
+        {{ field }}
+      </div>
+      {% endfor %}
+      <div class="col">
+        <button type="submit" class="btn btn-primary btn-sm mt-3">Add Customer</button>
+      </div>
+    </div>
+  </form>
+
+  <form action="{% url 'addProduct' %}" , method="POST">
+    {% csrf_token %}
+    {{ product_form }}
+    <button type="submit" class="btn btn-primary btn-sm mt-3">Add Product</button>
+  </form>
+  
+  
+  <form action="{% url 'order' %}" method="POST">
+    {% csrf_token %}
+    {{ order_form }}
+    <br>
+    {{ orderproduct_form }}
+    <br>
+    <!--<div id="product-form-container">
+       {% for product in orderproduct_form %}
+      {{ orderproduct_form.management_form }}
+      {{ orderproduct_form }}
+      {{ orderproduct_form.empty_form }}
+      {% endfor %}
+      {{ orderproduct_form }}
+    </div> -->
+    <input type="button" value="Add Product" id="add_more">
+  
+  
+    <br><br><br>
+    <div id="empty_form">
+      {{ orderproduct_form.empty_form }}
+      <!-- {{ empty }} -->
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm mt-3">Place Order</button>
+  </form>
+  
+  
+  
+  <form id="myForm" action="{% url 'order' %}" method="POST">
+    <table border="0" cellpadding="0" cellspacing="0">
+    {{ orderproduct_form }}
+    {{ orderproduct_form.management_form }}
+  </form>
+  
