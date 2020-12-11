@@ -4,27 +4,7 @@ from django import forms
 # Register your models here.
 from .models import *
 
-class OrderItemInline(admin.TabularInline):
-    model = OrderItem
-    extra = 1
-    exclude = ['user']
-
-    def save_model(self, request, obj, form, change):
-        obj.user = request.user
-        super().save_model(request, obj, form, change)
-
-class OrderAdmin(admin.ModelAdmin):
-    inlines = (OrderItemInline,)
-    exclude = ['user']
-
-    def save_model(self, request, obj, form, change):
-        obj.user = request.user
-        super().save_model(request, obj, form, change)
-
-
-class AutomaticallySaveUser(admin.ModelAdmin):
-    exclude = ['user']
-    # list_display = ('name', 'phone')
+class FilterUserAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.user = request.user
         super().save_model(request, obj, form, change)
@@ -35,8 +15,73 @@ class AutomaticallySaveUser(admin.ModelAdmin):
             return qs
         return qs.filter(user=request.user)
 
-admin.site.register(Customer, AutomaticallySaveUser)
-admin.site.register(Product, AutomaticallySaveUser)
+
+class CustomerAdmin(FilterUserAdmin):
+    list_display = ('name', 'phone')
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 1
+    exclude = ['user']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "product":
+            kwargs["queryset"] = Product.objects.filter(user=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+class OrderItemAdmin(FilterUserAdmin):
+    list_display = ('order_id', 'product', 'quantity', 'price')
+
+    def order_id(self, obj):
+        return obj.order.orderid
+
+    def get_form(self, request, obj=None, **kwargs):
+        self.exclude = ['user']
+        if not request.user.is_superuser:
+            self.exclude.append('user')
+        form = super(OrderItemAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['product'].queryset = Product.objects.filter(user=request.user)
+        return form
+
+    def save_model(self, request, obj, form, change):
+        obj.user = request.user
+        super().save_model(request, obj, form, change)
+
+class OrderAdmin(FilterUserAdmin):
+    list_display = ('ordertype', 'orderid', 'customer', 'date')
+    list_filter = ('ordertype',)
+    search_fields = ['orderid', 'customer__name']
+    inlines = [
+        OrderItemInline,
+    ]
+
+    def get_form(self, request, obj=None, **kwargs):
+        self.exclude = ['user']
+        if not request.user.is_superuser:
+            self.exclude.append('user')
+        form = super(OrderAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['customer'].queryset = Customer.objects.filter(user=request.user)
+        return form
+    
+    def save_formset(self, request, form, formset, change):
+        instances = formset.save(commit=False)
+        for obj in formset.deleted_objects:
+            obj.delete()
+        for instance in instances:
+            instance.user = request.user
+            instance.save()
+        formset.save_m2m()
+
+    def save_model(self, request, obj, form, change):
+        obj.user = request.user
+        super().save_model(request, obj, form, change)
+
+class ProductAdmin(FilterUserAdmin):
+    exclude = ['user']
+    list_display = ('name', 'product_ID', 'price', 'stock')
+
+admin.site.register(Customer, CustomerAdmin)
+admin.site.register(Product, ProductAdmin)
 admin.site.register(Order, OrderAdmin)
-admin.site.register(OrderItem, AutomaticallySaveUser)
+admin.site.register(OrderItem, OrderItemAdmin)
 admin.site.register(User, UserAdmin)

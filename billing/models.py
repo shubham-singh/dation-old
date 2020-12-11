@@ -47,7 +47,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="order")
 
     def _str__(self):
-        return f"{self.orderid}: {order.who}"
+        return f"{self.orderid}"
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET(get_sentinel_product))
@@ -57,3 +57,6 @@ class OrderItem(models.Model):
     price = models.FloatField(null=True)
     timestamp = models.DateTimeField(auto_now_add=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orderitem")
+
+    def _str__(self):
+        return f"{self.order}"
