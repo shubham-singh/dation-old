@@ -17,12 +17,15 @@ class FilterUserAdmin(admin.ModelAdmin):
 
 
 class CustomerAdmin(FilterUserAdmin):
+    exclude = ['user']
     list_display = ('name', 'phone')
+    search_fields = ['name', 'phone']
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 1
-    exclude = ['user']
+    exclude = ['user', 'price']
+    autocomplete_fields = ['product']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "product":
@@ -30,7 +33,7 @@ class OrderItemInline(admin.TabularInline):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 class OrderItemAdmin(FilterUserAdmin):
-    list_display = ('order_id', 'product', 'quantity', 'price')
+    list_display = ('order_id', 'product', 'quantity', 'discount', 'price')
 
     def order_id(self, obj):
         return obj.order.orderid
@@ -51,6 +54,7 @@ class OrderAdmin(FilterUserAdmin):
     list_display = ('ordertype', 'orderid', 'customer', 'date')
     list_filter = ('ordertype',)
     search_fields = ['orderid', 'customer__name']
+    autocomplete_fields = ['customer']
     inlines = [
         OrderItemInline,
     ]
@@ -69,6 +73,7 @@ class OrderAdmin(FilterUserAdmin):
             obj.delete()
         for instance in instances:
             instance.user = request.user
+            instance.price = (instance.quantity * instance.product.price) - instance.discount
             instance.save()
         formset.save_m2m()
 
@@ -79,6 +84,7 @@ class OrderAdmin(FilterUserAdmin):
 class ProductAdmin(FilterUserAdmin):
     exclude = ['user']
     list_display = ('name', 'product_ID', 'price', 'stock')
+    search_fields = ['name']
 
 admin.site.register(Customer, CustomerAdmin)
 admin.site.register(Product, ProductAdmin)
