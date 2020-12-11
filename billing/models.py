@@ -13,6 +13,7 @@ def get_sentinel_product():
 
 class User(AbstractUser):
     pass
+
 class Customer(models.Model):
     name = models.CharField(max_length=70)
     phone = models.CharField(max_length=10, blank=True, null=True)

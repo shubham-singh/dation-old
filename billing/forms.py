@@ -1,5 +1,12 @@
 from django import forms
 from .models import *
+from django.contrib.auth.forms import AuthenticationForm
+
+class AuthenticationFormWithInactiveUsersOkay(AuthenticationForm):
+    class Meta:
+        model = User
+    def confirm_login_allowed(self, user):
+        pass
 
 class CustomerForm(forms.ModelForm):
     class Meta:

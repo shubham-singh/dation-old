@@ -24,6 +24,10 @@ def login_view(request):
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('login'))
+    # else:
+    #     return HttpResponseRedirect(reverse('admin:index'))
+
+    authentication_form = AuthenticationFormWithInactiveUsersOkay()
     customer_form = CustomerForm()
     
     product_form = ProductForm()
@@ -42,7 +46,8 @@ def index(request):
         "customer_form": customer_form,
         'product_form': product_form,
         'order_form': order_form,
-        'orderproduct_form': orderproduct
+        'orderproduct_form': orderproduct,
+        "authentication_form": authentication_form
     })
 
 def add_customer(request):
