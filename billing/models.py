@@ -24,7 +24,7 @@ class Customer(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=70)
-    product_ID = models.CharField(max_length=14)
+    product_ID = models.CharField(max_length=14, blank=True, null=True)
     price = models.FloatField()
     stock = models.PositiveIntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="product")
