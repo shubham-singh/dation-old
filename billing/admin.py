@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django import forms
-# Register your models here.
 from .models import *
+# Register your models here.
 
 class FilterUserAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
@@ -67,6 +67,11 @@ class OrderAdmin(FilterUserAdmin):
         form.base_fields['customer'].queryset = Customer.objects.filter(user=request.user)
         return form
     
+    def stock(quantity, Product):
+        product = Product
+        product = product.stock - quantity
+        product.save()
+
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
         for obj in formset.deleted_objects:
@@ -74,6 +79,12 @@ class OrderAdmin(FilterUserAdmin):
         for instance in instances:
             instance.user = request.user
             instance.price = (instance.quantity * instance.product.price) - instance.discount
+            if(instance.order.ordertype == 'B'):
+                instance.product.stock = instance.product.stock + instance.quantity
+                instance.product.save()
+            else:
+                instance.product.stock = instance.product.stock - instance.quantity
+                instance.product.save()
             instance.save()
         formset.save_m2m()
 
