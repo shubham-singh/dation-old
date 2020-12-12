@@ -43,6 +43,7 @@ class Order(models.Model):
     orderid = models.CharField(max_length=21, unique=True)
     products = models.ManyToManyField(Product, through='OrderItem')
     customer = models.ForeignKey(Customer, on_delete=models.SET(get_sentinel_customer), null=True)
+    total = models.PositiveIntegerField(default=0)
     date = models.DateField(auto_now_add=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="order")
 

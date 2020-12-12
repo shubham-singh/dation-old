@@ -51,8 +51,9 @@ class OrderItemAdmin(FilterUserAdmin):
         super().save_model(request, obj, form, change)
 
 class OrderAdmin(FilterUserAdmin):
-    list_display = ('ordertype', 'orderid', 'customer', 'date')
+    list_display = ('ordertype', 'orderid', 'customer', 'total', 'date')
     list_filter = ('ordertype',)
+    readonly_fields = ['total']
     search_fields = ['orderid', 'customer__name']
     autocomplete_fields = ['customer']
     inlines = [
@@ -85,6 +86,8 @@ class OrderAdmin(FilterUserAdmin):
             else:
                 instance.product.stock = instance.product.stock - instance.quantity
                 instance.product.save()
+            instance.order.total += instance.price
+            instance.order.save()
             instance.save()
         formset.save_m2m()
 
