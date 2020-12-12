@@ -54,7 +54,7 @@ class OrderAdmin(FilterUserAdmin):
     list_display = ('ordertype', 'orderid', 'customer', 'total', 'date')
     list_filter = ('ordertype',)
     readonly_fields = ['total']
-    search_fields = ['orderid', 'customer__name']
+    search_fields = ['orderid', 'customer__name', 'date']
     autocomplete_fields = ['customer']
     inlines = [
         OrderItemInline,
